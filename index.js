@@ -27,40 +27,39 @@ app.get("/api/hello", function (req, res) {
 });
 
 
-const isInvalidDate = (dateParam) => {
-  const date = new Date(dateParam);
-  return date.toUTCString() === "Invalid Date"
+const isValidDate = (dateParam) => {
+  return !isNaN(new Date(dateParam).getTime())
 }
 
-const isUnix = (date) => {
-  return new Date(+date).toUTCString() !== "Invalid Date"
+const isUnixTimestamp = (dateParam) => {
+  return !isNaN(new Date(+dateParam).getTime())
 }
 
 app.get("/api/:date", function (req, res) {
   const dateParam = req.params.date;
   console.log(req.params.date);
 
-  if (isInvalidDate(dateParam)) {
-    if (isUnix(dateParam)) {
-
-      console.log(new Date(+dateParam).getTime())
-
-      return res.json({
-        "unix": new Date(+dateParam).getTime(),
-        "utc": new Date(+dateParam).toUTCString(),
-      })
-    }
-
+  // check if valid
+  if (isValidDate(dateParam)) {
     return res.json({
-      "error": "Invalid Date"
+      "unix": new Date(dateParam).getTime(),
+      "utc": new Date(dateParam).toUTCString(),
     })
+  }
 
+  // check if unix
+  if (isUnixTimestamp(dateParam)) {
+    return res.json({
+      "unix": new Date(+dateParam).getTime(),
+      "utc": new Date(+dateParam).toUTCString(),
+    })
   }
 
   return res.json({
-    "unix": new Date(dateParam).getTime(),
-    "utc": new Date(dateParam).toUTCString(),
+    "error": "Invalid Date"
   })
+
+
 
 
 });
