@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "nodemon": "nodemon index.js"
+    "nodemon": "nodemon index.js",
+    "kpstart": "npm run kill-port && node index.js",
+    "kpnodemon": "npm run kill-port && nodemon index.js",
+    "kill-port": "lsof -i tcp:3000 | awk 'NR!=1 {print $2}' | xargs kill -9 || true"
   },
   "dependencies": {
     "cors": "^2.8.0",

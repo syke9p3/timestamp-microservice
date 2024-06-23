@@ -1,6 +1,8 @@
 // index.js
 // where your node app starts
 
+// https://github.com/syke9p3/timestamp-microservice
+
 // init project
 var express = require('express');
 var app = express();
@@ -25,22 +27,48 @@ app.get("/api/hello", function (req, res) {
 });
 
 
-const isInvalidDate = (date) => {
-  date.toUTCString() === "Invalid Date"
+const isInvalidDate = (dateParam) => {
+  const date = new Date(dateParam);
+  return date.toUTCString() === "Invalid Date"
+}
+
+const isUnix = (date) => {
+  return new Date(+date).toUTCString() !== "Invalid Date"
 }
 
 app.get("/api/:date", function (req, res) {
   const dateParam = req.params.date;
   console.log(req.params.date);
 
+  if (isInvalidDate(dateParam)) {
+    if (isUnix(dateParam)) {
 
-  res.json({ date: dateParam });
+      console.log(new Date(+dateParam).getTime())
+
+      return res.json({
+        "unix": new Date(+dateParam).getTime(),
+        "utc": new Date(+dateParam).toUTCString(),
+      })
+    }
+
+    return res.json({
+      "error": "Invalid Date"
+    })
+
+  }
+
+  return res.json({
+    "unix": new Date(dateParam).getTime(),
+    "utc": new Date(dateParam).toUTCString(),
+  })
+
+
 });
 
 app.get("/api", (req, res) => {
   res.json({
-    unix: new Date().toUTCString(),
-    utc: new Date().getTime()
+    unix: new Date().getTime(),
+    utc: new Date().toUTCString(),
   })
 })
 
